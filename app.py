@@ -42,7 +42,6 @@ def index():
                 psnr_value = calculate_psnr(image_path, out_path)
                 result = "Metin başarıyla gömüldü."
                 image_url = url_for('static', filename='output/text_hidden.png')
-                # 🔑 Anahtarı static klasöre kopyala
                 shutil.copy("key.key", os.path.join(OUTPUT_FOLDER, "key.key"))
                 key_url = url_for('static', filename='output/key.key')
             else:
@@ -82,9 +81,10 @@ def index():
         elif action == "file_extract":
             active_section = "file-extract"
             try:
-                output_file = extract_file(image_path, os.path.join(OUTPUT_FOLDER, "extracted"))
+                output_file_path = os.path.join(OUTPUT_FOLDER, "extracted")
+                extracted_path = extract_file(image_path, output_file_path)
                 result = "Dosya başarıyla çıkarıldı."
-                file_url = url_for('static', filename='output/extracted')
+                file_url = url_for('static', filename='output/' + os.path.basename(extracted_path)) 
             except Exception as e:
                 result = f"Hata oluştu: {str(e)}"
 

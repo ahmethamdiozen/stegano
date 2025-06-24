@@ -1,6 +1,6 @@
 # LSB Tabanlı Steganografi ve AES Şifreleme ile Veri Gizleme
 
-Bu proje, dijital görüntüler üzerinde steganografi ve şifreleme tekniklerini birleştirerek hem **metin** hem de **dosya** gizleyebilen bir web uygulamasıdır.
+Bu proje, dijital görüntüler üzerinde steganografi ve şifreleme tekniklerini birleştirerek görsel üzerine hem **metin** hem de **dosya** gizleyebilen bir web uygulamasıdır.
 
 ---
 

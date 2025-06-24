@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Steganografi Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>LSB Steganografi</h1>
+
+    <!-- Ana seçim butonları -->
+    <div style="text-align:center; margin-bottom: 20px;">
+        <button onclick="showMain('text')">Metin Gizleme/Çıkarma</button>
+        <button onclick="showMain('file')">Dosya Gizleme/Çıkarma</button>
+    </div>
+
+    <!-- METİN alt menüsü -->
+    <div id="text-main" style="display:none; text-align:center;">
+        <button onclick="showSection('text-hide')">Metin Gizle</button>
+        <button onclick="showSection('text-extract')">Metin Çıkar</button>
+    </div>
+
+    <!-- DOSYA alt menüsü -->
+    <div id="file-main" style="display:none; text-align:center;">
+        <button onclick="showSection('file-hide')">Dosya Gizle</button>
+        <button onclick="showSection('file-extract')">Dosya Çıkar</button>
+    </div>
+
+    <!-- METİN GİZLE FORMU -->
+    <div id="text-hide" style="display:none;">
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="text">
+            <label>Görsel:</label>
+            <input type="file" name="image" required><br>
+            <label>Mesaj:</label>
+            <textarea name="message" required></textarea><br>
+            <button type="submit" name="action" value="hide">Gizle</button>
+        </form>
+    </div>
+
+    <!-- METİN ÇIKAR FORMU -->
+    <div id="text-extract" style="display:none;">
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="text">
+            <label>Görsel:</label>
+            <input type="file" name="image" required><br>
+            <label>Anahtar (key.key):</label>
+            <input type="file" name="keyfile" required><br>
+            <button type="submit" name="action" value="extract">Çıkart</button>
+        </form>
+    </div>
+
+    <!-- DOSYA GİZLE FORMU -->
+    <div id="file-hide" style="display:none;">
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="file">
+            <label>Görsel:</label>
+            <input type="file" name="image" required><br>
+            <label>Gizlenecek Dosya:</label>
+            <input type="file" name="file" required><br>
+            <button type="submit" name="action" value="file_hide">Dosya Gizle</button>
+        </form>
+    </div>
+
+    <!-- DOSYA ÇIKAR FORMU -->
+    <div id="file-extract" style="display:none;">
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="file">
+            <label>Görsel:</label>
+            <input type="file" name="image" required><br>
+            <button type="submit" name="action" value="file_extract">Dosya Çıkar</button>
+        </form>
+    </div>
+
+    <!-- SONUÇ -->
+    {% if result %}
+    <div class="result-box" id="resultBox">
+        <h3>Sonuç:</h3>
+
+        {% if "Çıkarılan metin:" in result %}
+            <textarea id="extractedText" rows="5" style="width:100%;">{{ result.split("Çıkarılan metin:")[1].strip() }}</textarea>
+            <button onclick="copyToClipboard()">📋 Kopyala</button>
+        {% else %}
+            <p>{{ result }}</p>
+        {% endif %}
+
+        {% if image_url %}
+            <img src="{{ image_url }}" width="300"><br>
+            <p><a href="{{ image_url }}" download>🖼️ Görseli indir</a></p>
+        {% endif %}
+        {% if key_url %}
+            <p><a href="{{ key_url }}" download>🔑 Anahtar indir</a></p>
+        {% endif %}
+        {% if file_url %}
+            <p><a href="{{ file_url }}" download>📦 Dosyayı indir</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+<script>
+    function hideAll() {
+        const sections = ['text-main', 'file-main', 'text-hide', 'text-extract', 'file-hide', 'file-extract'];
+        sections.forEach(id => document.getElementById(id).style.display = 'none');
+
+    }
+
+    function showMain(type) {
+        hideAll();
+        const result = document.getElementById("resultBox");
+        if (result) result.remove();
+
+        if (type === 'text') {
+            document.getElementById('text-main').style.display = 'block';
+        } else if (type === 'file') {
+            document.getElementById('file-main').style.display = 'block';
+        }
+    }
+
+    function showSection(sectionId) {
+        hideAll();
+        document.getElementById(sectionId).style.display = 'block';
+    }
+
+    function copyToClipboard() {
+    const textArea = document.getElementById("extractedText");
+    textArea.select();
+    document.execCommand("copy");
+    alert("Metin panoya kopyalandı!");
+}
+
+    // 📦 Sayfa POST sonrası geri döndüğünde otomatik açılacak bölüm
+    {% if active_section %}
+        showSection("{{ active_section }}");
+    {% endif %}
+</script>
+
+
+</body>
+</html>
